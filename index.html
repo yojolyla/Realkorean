@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangukTalk</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangukTalk</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:#0d0e10;color:#f3eee9;font-family:Arial,sans-serif}button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 .home{position:relative;width:100%;max-width:650px;margin:auto}.home-image{display:block;width:100%;height:auto}.hotspot{position:absolute;background:transparent;border:0;padding:0;-webkit-tap-highlight-color:transparent}.hotspot:focus-visible{outline:2px solid #d8b79a}
@@ -9,47 +9,140 @@
 .blank-word{display:inline-block;min-width:105px;max-width:100%;padding:0 7px 3px;border-bottom:2px solid #d9b99d;color:#e9d4c0;vertical-align:baseline;overflow-wrap:anywhere;text-align:center}.blank-word.correct{color:#a6dfb6;border-color:#a6dfb6;background:rgba(60,160,95,.13);border-radius:5px}.blank-word.incorrect{color:#f0a89e;border-color:#f0a89e;background:rgba(180,65,65,.13);border-radius:5px}</style></head><body>
 <section id="homePage" class="home"><img class="home-image" src="homepage.jpeg" alt="HangukTalk homepage">
 <button class="hotspot daily" aria-label="Daily Korean" onclick="openQuiz()"></button><button class="hotspot business" aria-label="Business Korean" onclick="comingSoon()"></button><button class="hotspot starter" aria-label="Starter" onclick="comingSoon()"></button><button class="hotspot intermediate" aria-label="Intermediate" onclick="comingSoon()"></button><button class="hotspot advanced" aria-label="Advanced" onclick="comingSoon()"></button><button class="hotspot microphone" aria-label="Microphone" onclick="comingSoon()"></button><button class="hotspot keyboard" aria-label="Keyboard" onclick="comingSoon()"></button><button class="hotspot homebtn" aria-label="Home" onclick="goHome()"></button><button class="hotspot learn" aria-label="Learn" onclick="comingSoon()"></button><button class="hotspot character" aria-label="My Character" onclick="comingSoon()"></button><button class="hotspot progressbtn" aria-label="Progress" onclick="comingSoon()"></button><button class="hotspot rewards" aria-label="Rewards" onclick="comingSoon()"></button></section>
-<section id="quizPage" class="quiz-page hidden"><div class="quiz-header"><div class="logo">Hanguk<span>Talk</span></div><button class="back" onclick="goHome()">← Home</button></div><div id="quizContent"><h1>Daily Korean</h1><p class="subtitle">BTS Edition · Completa 10 frasi in coreano scrivendo o usando la voce.</p><div class="progress"><div class="progress-fill" id="progressFill"></div></div><div class="question-card"><div class="counter" id="counter"></div><div class="korean" id="sentence"></div><div class="translation" id="translation"></div><div class="hint" id="hint"></div></div><input class="answer" id="answer" type="text" placeholder="Scrivi in coreano..." autocomplete="off" autocapitalize="off" spellcheck="false"><div class="actions"><button class="mic" id="micButton" onclick="startMicrophone()">🎙️</button><button class="primary" id="checkButton" onclick="verify()">Verifica</button></div><div class="feedback" id="feedback" aria-live="polite"></div><div class="quiz-bottom"><button class="listen" onclick="speakKorean()">🔊 Ascolta</button><button class="next hidden" id="nextButton" onclick="nextQuestion()">Avanti →</button></div><p class="note">Le frasi sono originali e non riproducono testi delle canzoni BTS. Il riconoscimento vocale richiede un browser compatibile e l'autorizzazione al microfono.</p></div><div id="finished" class="hidden"><h1>Lezione completata</h1><p>잘했어요! Ottimo lavoro.</p><div class="score" id="score"></div><p id="summary"></p><button class="next" onclick="restartQuiz()">Ricomincia ↻</button> <button class="back" onclick="goHome()">Home</button></div></section>
+<section id="quizPage" class="quiz-page hidden"><div class="quiz-header"><div class="logo">Hanguk<span>Talk</span></div><button class="back" onclick="goHome()">← Home</button></div><div id="quizContent"><h1>Daily Korean</h1><p class="subtitle">BTS Edition · Complete 10 Korean sentences by speaking or typing.</p><div class="progress"><div class="progress-fill" id="progressFill"></div></div><div class="question-card"><div class="counter" id="counter"></div><div class="korean" id="sentence"></div><div class="translation" id="translation"></div><div class="hint" id="hint"></div></div><input class="answer" id="answer" type="text" placeholder="Type in Korean..." autocomplete="off" autocapitalize="off" spellcheck="false"><div class="actions"><button class="mic" id="micButton" onclick="startMicrophone()">🎙️</button></div><div class="feedback" id="feedback" aria-live="polite"></div><div class="quiz-bottom"><button class="listen" onclick="speakKorean()">🔊 Listen</button><button class="next hidden" id="nextButton" onclick="nextQuestion()">Next →</button></div><p class="note">All sentences are original and do not reproduce BTS lyrics. Voice recognition requires a compatible browser and microphone permission.</p></div><div id="finished" class="hidden"><h1>Lesson completed</h1><p>잘했어요! Great job!</p><div class="score" id="score"></div><p id="summary"></p><button class="next" onclick="restartQuiz()">Try again ↻</button> <button class="back" onclick="goHome()">Home</button></div></section>
 <div class="overlay" id="overlay" onclick="closePopup()"><div class="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle" onclick="event.stopPropagation()"><h2 id="popupTitle">COMING SOON</h2><p>새로운 기능을 준비하고 있어요.<br>We're working on something new.</p><button onclick="closePopup()">OK</button></div></div>
 <script>
 const questions=[
-{sentence:"저는 BTS를 _____.",translation:"Mi piacciono i BTS.",hint:"Verbo: piacere, forma cortese",answer:"좋아해요"},
-{sentence:"BTS 노래를 자주 _____.",translation:"Ascolto spesso le canzoni dei BTS.",hint:"Verbo: ascoltare",answer:"들어요"},
-{sentence:"제 친구는 BTS _____이에요.",translation:"Il mio amico è un fan dei BTS.",hint:"Parola inglese: fan",answer:"팬"},
-{sentence:"오늘 BTS 영상을 _____.",translation:"Oggi guardo un video dei BTS.",hint:"Verbo: guardare",answer:"봐요"},
-{sentence:"이 노래는 정말 _____.",translation:"Questa canzone è davvero bella.",hint:"Aggettivo: bello, buono",answer:"좋아요"},
-{sentence:"저는 한국어를 _____.",translation:"Studio coreano.",hint:"Verbo: studiare",answer:"공부해요"},
-{sentence:"BTS 콘서트에 _____ 싶어요.",translation:"Voglio andare a un concerto dei BTS.",hint:"Verbo andare + 고 싶어요",answer:"가고"},
-{sentence:"이 사진은 아주 _____.",translation:"Questa foto è molto bella.",hint:"Aggettivo: carino, grazioso",answer:"예뻐요"},
-{sentence:"저는 친구와 같이 _____.",translation:"Canto insieme a un amico.",hint:"Verbo: cantare",answer:"노래해요"},
-{sentence:"BTS는 한국 _____이에요.",translation:"I BTS sono un gruppo coreano.",hint:"Parola: gruppo",answer:"그룹"}
+{sentence:"저는 BTS를 _____.",translation:"I like BTS.",hint:"Verb: to like, polite form",answer:"좋아해요"},
+{sentence:"BTS 노래를 자주 _____.",translation:"I often listen to BTS songs.",hint:"Verb: to listen",answer:"들어요"},
+{sentence:"제 친구는 BTS _____이에요.",translation:"My friend is a BTS fan.",hint:"English loanword: fan",answer:"팬"},
+{sentence:"오늘 BTS 영상을 _____.",translation:"Today I am watching a BTS video.",hint:"Verb: to watch",answer:"봐요"},
+{sentence:"이 노래는 정말 _____.",translation:"This song is really good.",hint:"Adjective: good",answer:"좋아요"},
+{sentence:"저는 한국어를 _____.",translation:"I study Korean.",hint:"Verb: to study",answer:"공부해요"},
+{sentence:"BTS 콘서트에 _____ 싶어요.",translation:"I want to go to a BTS concert.",hint:"Verb: to go + 고 싶어요",answer:"가고"},
+{sentence:"이 사진은 아주 _____.",translation:"This photo is very pretty.",hint:"Adjective: pretty",answer:"예뻐요"},
+{sentence:"저는 친구와 같이 _____.",translation:"I sing with a friend.",hint:"Verb: to sing",answer:"노래해요"},
+{sentence:"BTS는 한국 _____이에요.",translation:"BTS is a Korean group.",hint:"Word: group",answer:"그룹"}
 ];
-let index=0,score=0,locked=false,recognition=null;
+let index=0,score=0,locked=false,recognition=null,typingTimer=null;
 const $=id=>document.getElementById(id);
 function openQuiz(){$("homePage").classList.add("hidden");$("quizPage").classList.remove("hidden");restartQuiz();window.scrollTo(0,0)}
-function goHome(){if(recognition){recognition.abort();recognition=null}if("speechSynthesis" in window)speechSynthesis.cancel();$("quizPage").classList.add("hidden");$("homePage").classList.remove("hidden");window.scrollTo(0,0)}
+function stopRecognition(){if(recognition){const r=recognition;recognition=null;try{r.abort()}catch(e){}}$("micButton").classList.remove("active");$("micButton").textContent="🎙️"}
+function goHome(){clearTimeout(typingTimer);stopRecognition();if("speechSynthesis" in window)speechSynthesis.cancel();$("quizPage").classList.add("hidden");$("homePage").classList.remove("hidden");window.scrollTo(0,0)}
 function comingSoon(){$("overlay").classList.add("visible")}
 function closePopup(){$("overlay").classList.remove("visible")}
-function normalize(text){return text.normalize("NFC").trim().replace(/[\s.!?。]/g,"").toLowerCase()}
-function restartQuiz(){index=0;score=0;$("finished").classList.add("hidden");$("quizContent").classList.remove("hidden");showQuestion()}
+function normalize(text){return text.normalize("NFC").trim().replace(/[\s.,!?。！？…]/g,"").toLowerCase()}
+function extractAnswer(text){
+ const q=questions[index], full=q.sentence.replace("_____",q.answer);
+ const heard=normalize(text), expected=normalize(q.answer);
+ const [before,after]=q.sentence.split("_____");
+ const pre=normalize(before),post=normalize(after||"");
+ // Accept either the missing word or the complete sentence.
+ if(heard===normalize(full))return q.answer;
+ if(heard.startsWith(pre)&&heard.endsWith(post)&&heard.length>pre.length+post.length){
+   const middle=heard.slice(pre.length,heard.length-post.length);
+   return middle||text.trim();
+ }
+ return text.trim();
+}
+function restartQuiz(){clearTimeout(typingTimer);stopRecognition();index=0;score=0;$("finished").classList.add("hidden");$("quizContent").classList.remove("hidden");showQuestion()}
 function updateSentence(){
- const q=questions[index];
- const parts=q.sentence.split("_____");
- const target=$("sentence");
+ const q=questions[index],parts=q.sentence.split("_____"),target=$("sentence");
  target.replaceChildren();
  target.append(document.createTextNode(parts[0]));
  const blank=document.createElement("span");
- blank.id="wordBlank";
- blank.className="blank-word";
- blank.textContent=$("answer").value.trim()||"_____";
+ blank.id="wordBlank";blank.className="blank-word";
+ blank.textContent=extractAnswer($("answer").value)||"_____";
  target.append(blank);
  target.append(document.createTextNode(parts.slice(1).join("_____")));
 }
-function showQuestion(){const q=questions[index];$("counter").textContent=`QUESTION ${index+1} / ${questions.length}`;$("translation").textContent=q.translation;$("hint").textContent="Suggerimento: "+q.hint;$("progressFill").style.width=((index+1)/questions.length*100)+"%";$("answer").value="";$("answer").disabled=false;$("checkButton").disabled=false;$("feedback").textContent="";$("feedback").className="feedback";$("nextButton").classList.add("hidden");locked=false;updateSentence()}
-function verify(){if(locked)return;const value=$("answer").value.trim();if(!value){$("feedback").textContent="Scrivi o pronuncia una risposta.";return}const correct=normalize(value)===normalize(questions[index].answer);if(correct)score++;updateSentence();$("wordBlank").classList.add(correct?"correct":"incorrect");$("feedback").className="feedback "+(correct?"good":"bad");$("feedback").textContent=correct?"✓ Corretto! "+questions[index].answer:"✗ Risposta corretta: "+questions[index].answer;locked=true;$("answer").disabled=true;$("checkButton").disabled=true;$("nextButton").textContent=index===questions.length-1?"Risultato →":"Avanti →";$("nextButton").classList.remove("hidden")}
-function nextQuestion(){if(recognition){recognition.abort();recognition=null}if(index<questions.length-1){index++;showQuestion()}else{$("quizContent").classList.add("hidden");$("finished").classList.remove("hidden");$("score").textContent=score+" / "+questions.length;$("summary").textContent=score===questions.length?"Perfetto! Tutte le risposte sono corrette.":"Hai completato il quiz Daily Korean!"}window.scrollTo(0,0)}
-function speakKorean(){if(!("speechSynthesis" in window)){$("feedback").textContent="Pronuncia non disponibile.";return}speechSynthesis.cancel();const q=questions[index];const full=q.sentence.replace("_____",q.answer);const utterance=new SpeechSynthesisUtterance(full);utterance.lang="ko-KR";utterance.rate=.85;speechSynthesis.speak(utterance)}
+function showQuestion(){
+ const q=questions[index];
+ $("counter").textContent=`QUESTION ${index+1} / ${questions.length}`;
+ $("translation").textContent=q.translation;
+ $("hint").textContent="Hint: "+q.hint;
+ $("progressFill").style.width=((index+1)/questions.length*100)+"%";
+ $("answer").value="";$("answer").disabled=false;
+ $("feedback").textContent="";$("feedback").className="feedback";
+ $("nextButton").classList.add("hidden");locked=false;updateSentence();
+}
+function evaluate(text){
+ if(locked||!text.trim())return;
+ clearTimeout(typingTimer);
+ const q=questions[index];
+ const candidate=extractAnswer(text);
+ const correct=normalize(candidate)===normalize(q.answer) ||
+               normalize(text)===normalize(q.sentence.replace("_____",q.answer));
+ $("answer").value=text;
+ updateSentence();
+ $("wordBlank").classList.add(correct?"correct":"incorrect");
+ $("feedback").className="feedback "+(correct?"good":"bad");
+ $("feedback").textContent=correct?"✓ Correct!":"✗ Incorrect. Correct answer: "+q.answer;
+ if(correct)score++;
+ locked=true;$("answer").disabled=true;
+ $("nextButton").textContent=index===questions.length-1?"See results →":"Next →";
+ $("nextButton").classList.remove("hidden");
+}
+function nextQuestion(){
+ clearTimeout(typingTimer);stopRecognition();
+ if(index<questions.length-1){index++;showQuestion()}
+ else{
+  $("quizContent").classList.add("hidden");$("finished").classList.remove("hidden");
+  $("score").textContent=score+" / "+questions.length;
+  $("summary").textContent=score===questions.length?"Perfect! All answers are correct.":"You completed the Daily Korean quiz!";
+ }
+ window.scrollTo(0,0);
+}
+function speakKorean(){
+ if(!("speechSynthesis" in window)){$("feedback").textContent="Speech playback is not available.";return}
+ speechSynthesis.cancel();
+ const q=questions[index],utterance=new SpeechSynthesisUtterance(q.sentence.replace("_____",q.answer));
+ utterance.lang="ko-KR";utterance.rate=.85;speechSynthesis.speak(utterance);
+}
 const SpeechAPI=window.SpeechRecognition||window.webkitSpeechRecognition;
-function startMicrophone(){if(locked)return;if(!SpeechAPI){$("feedback").textContent="Il browser non supporta il riconoscimento vocale. Prova Chrome.";return}if(recognition){recognition.stop();return}const r=new SpeechAPI();recognition=r;r.lang="ko-KR";r.interimResults=false;r.continuous=false;r.maxAlternatives=3;$("micButton").classList.add("active");$("micButton").textContent="🔴";$("feedback").textContent="Sto ascoltando... parla in coreano.";r.onresult=function(event){if(recognition!==r)return;const transcript=event.results[0][0].transcript;$("answer").value=transcript;updateSentence();$("feedback").textContent="Ho riconosciuto: "+transcript+". Controlla e premi Verifica."};r.onerror=function(event){if(recognition!==r)return;const messages={"not-allowed":"Microfono non autorizzato. Controlla i permessi di Chrome e apri il sito direttamente su HTTPS.","audio-capture":"Non riesco ad accedere al microfono.","no-speech":"Non ho sentito la tua voce. Riprova.","network":"Errore di rete nel riconoscimento vocale.","language-not-supported":"Riconoscimento coreano non supportato."};$("feedback").textContent=messages[event.error]||"Errore microfono: "+event.error};r.onend=function(){if(recognition===r)recognition=null;$("micButton").classList.remove("active");$("micButton").textContent="🎙️"};try{r.start()}catch(error){recognition=null;$("micButton").classList.remove("active");$("micButton").textContent="🎙️";$("feedback").textContent="Impossibile avviare il microfono: "+error.message}}
-$("answer").addEventListener("input",function(){if(!locked)updateSentence()});$("answer").addEventListener("keydown",function(event){if(event.key==="Enter"){if(locked)nextQuestion();else verify()}});document.addEventListener("keydown",function(event){if(event.key==="Escape")closePopup()});
+function startMicrophone(){
+ if(locked)return;
+ if(!SpeechAPI){$("feedback").textContent="Voice recognition is not supported in this browser. Try Chrome.";return}
+ if(recognition){stopRecognition();return}
+ clearTimeout(typingTimer);
+ const r=new SpeechAPI();recognition=r;r.lang="ko-KR";r.interimResults=false;r.continuous=false;r.maxAlternatives=5;
+ $("micButton").classList.add("active");$("micButton").textContent="🔴";
+ $("feedback").textContent="Listening... speak the missing word or the full sentence.";
+ r.onresult=function(event){
+  if(recognition!==r||locked)return;
+  const options=Array.from(event.results[0],item=>item.transcript);
+  const correctOption=options.find(t=>normalize(extractAnswer(t))===normalize(questions[index].answer));
+  evaluate(correctOption||options[0]);
+ };
+ r.onerror=function(event){
+  if(recognition!==r||locked)return;
+  if(event.error==="aborted")return;
+  const messages={
+   "not-allowed":"Microphone permission denied. Check Chrome site permissions and use HTTPS.",
+   "audio-capture":"Cannot access the microphone.",
+   "no-speech":"No speech detected. Please try again.",
+   "network":"Network error during speech recognition.",
+   "language-not-supported":"Korean speech recognition is not supported."
+  };
+  $("feedback").textContent=messages[event.error]||"Microphone error: "+event.error;
+ };
+ r.onend=function(){
+  if(recognition===r)recognition=null;
+  $("micButton").classList.remove("active");$("micButton").textContent="🎙️";
+ };
+ try{r.start()}catch(error){
+  recognition=null;$("micButton").classList.remove("active");$("micButton").textContent="🎙️";
+  $("feedback").textContent="Could not start microphone: "+error.message;
+ }
+}
+$("answer").addEventListener("input",function(){
+ if(locked)return;
+ clearTimeout(typingTimer);updateSentence();
+ $("feedback").textContent="";$("feedback").className="feedback";
+ if(this.value.trim())typingTimer=setTimeout(()=>evaluate($("answer").value),1600);
+});
+$("answer").addEventListener("keydown",function(event){
+ if(event.key==="Enter"&&!locked){event.preventDefault();evaluate($("answer").value)}
+});
+document.addEventListener("keydown",function(event){if(event.key==="Escape")closePopup()});
 </script></body></html>
